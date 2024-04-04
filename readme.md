@@ -1,6 +1,9 @@
 # network_asio_experience
 
-network_asio_experience - A template for C++ projects.
+network_asio_experience - project to learn and experiment with the Asio library.
+
+Code made by following video lessons from javidx9:
+1. https://www.youtube.com/watch?v=2hNdkYInj4g `DONE`
 
 ### Prerequisites for Building the Project
 

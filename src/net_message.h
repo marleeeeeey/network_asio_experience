@@ -87,4 +87,22 @@ struct message
     }
 };
 
+// Forward declare the connection.
+template <typename T>
+class connection;
+
+template <typename T>
+struct owned_message
+{
+    std::shared_ptr<connection<T>> remote = nullptr; // Server needs to identify which client sent the message.
+    message<T> msg;
+
+    // Overload the << operator for std::cout compatibility.
+    friend std::ostream& operator<<(std::ostream& os, const owned_message<T>& msg)
+    {
+        os << msg.msg;
+        return os;
+    }
+};
+
 } // namespace net

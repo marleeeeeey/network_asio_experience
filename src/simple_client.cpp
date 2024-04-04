@@ -1,13 +1,6 @@
 #include "simple_client.h"
 #include "net_message.h"
 #include <cassert>
-#include <cstdint>
-
-enum class CustomMsgTypes : uint32_t
-{
-    FireBullet,
-    MovePlayer
-};
 
 void StartSimpleClient()
 {
@@ -35,4 +28,11 @@ void StartSimpleClient()
     assert(a == 1);
     assert(b == true);
     assert(c == 3.14159f);
+}
+
+void StartCustomClient()
+{
+    CustomClient c;
+    c.Connect("asdf.com", 60000);
+    c.FireBullet(1.0f, 2.0f);
 }
