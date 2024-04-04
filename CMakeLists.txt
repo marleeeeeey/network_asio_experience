@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(cpp_project_template VERSION 1.0 LANGUAGES CXX)
+project(network_asio_experience VERSION 1.0 LANGUAGES CXX)
 
 # ###################################################################
 # #################### Setup compiler options #######################
@@ -21,10 +21,10 @@ add_subdirectory(thirdparty/my_cpp_utils)
 # ###################################################################
 # ##################### Build project itself ########################
 # ###################################################################
-file(GLOB_RECURSE cpp_project_template_SOURCES "./src/*.cpp")
-add_executable(cpp_project_template ${cpp_project_template_SOURCES})
+file(GLOB_RECURSE network_asio_experience_SOURCES "./src/*.cpp")
+add_executable(network_asio_experience ${network_asio_experience_SOURCES})
 
-target_compile_options(cpp_project_template PRIVATE
+target_compile_options(network_asio_experience PRIVATE
     -Wall
     -Wextra
 
@@ -32,12 +32,12 @@ target_compile_options(cpp_project_template PRIVATE
     # -Wpedantic
 )
 
-target_link_libraries(cpp_project_template
+target_link_libraries(network_asio_experience
     PRIVATE
     my_cpp_utils
 )
 
-target_include_directories(cpp_project_template
+target_include_directories(network_asio_experience
     PRIVATE
     src
 )

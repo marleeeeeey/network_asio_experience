@@ -4,8 +4,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug cpp_project_template",
-      "program": "build/cpp_project_template.exe",
+      "name": "Debug network_asio_experience",
+      "program": "build/network_asio_experience.exe",
       "args": []
     }
   ]

@@ -6,6 +6,7 @@
     "glm",
     "magic-enum",
     "nlohmann-json",
-    "spdlog"
+    "spdlog",
+    "asio"
   ]
 }

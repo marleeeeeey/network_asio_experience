@@ -1,6 +1,6 @@
-# cpp_project_template
+# network_asio_experience
 
-cpp_project_template - A template for C++ projects.
+network_asio_experience - A template for C++ projects.
 
 ### Prerequisites for Building the Project
 
@@ -14,7 +14,7 @@ cpp_project_template - A template for C++ projects.
 ### Clone the Repository
 
 ```
-git clone --recursive https://github.com/marleeeeeey/cpp_project_template.git
+git clone --recursive https://github.com/marleeeeeey/network_asio_experience.git
 ```
 
 ### Build, run and debug via VSCode tasks (Windows)
@@ -26,7 +26,7 @@ git clone --recursive https://github.com/marleeeeeey/cpp_project_template.git
 
 ### Build, run and debug manually (Windows)
 
-To build cpp_project_template on Windows, it's recommended to obtain the dependencies by using vcpkg. The following instructions assume that you will follow the vcpkg recommendations and install vcpkg as a subfolder. If you want to use "classic mode" or install vcpkg somewhere else, you're on your own.
+To build network_asio_experience on Windows, it's recommended to obtain the dependencies by using vcpkg. The following instructions assume that you will follow the vcpkg recommendations and install vcpkg as a subfolder. If you want to use "classic mode" or install vcpkg somewhere else, you're on your own.
 
 This project define it's dependences:
 1. In a `vcpkg.json` file, and you are pulling in vcpkg's cmake toolchain file.
@@ -35,7 +35,7 @@ This project define it's dependences:
 First, we bootstrap a project-specific installation of vcpkg ("manifest mode") in the default location, `<project root>/vcpkg`. From the project root, run these commands:
 
 ```
-cd cpp_project_template
+cd network_asio_experience
 git clone https://github.com/microsoft/vcpkg
 .\vcpkg\bootstrap-vcpkg.bat
 ```
@@ -58,8 +58,8 @@ cd build
 cmake --build .
 ```
 
-Run the cpp_project_template:
+Run the network_asio_experience:
 
 ```
-cpp_project_template.exe
+network_asio_experience.exe
 ```
