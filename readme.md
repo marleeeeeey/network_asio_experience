@@ -20,6 +20,7 @@ git clone --recursive https://github.com/marleeeeeey/network_asio_experience.git
 ### Build, run and debug via VSCode tasks (Windows)
 
 - Open the project folder in VSCode.
+- Run task: `(Windows) 02. Git submodule update`.
 - Run task: `(Windows) 03. Install vcpkg as subfolder`.
 - Run task: `(Windows) 30. + Run`.
 - For debugging press `F5`.

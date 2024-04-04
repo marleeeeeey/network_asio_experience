@@ -12,7 +12,7 @@
       "command": "rmdir /s /q build",
     },
     {
-      "label": "(Windows) 02. git submodule update",
+      "label": "(Windows) 02. Git submodule update",
       "type": "shell",
       "command": "git submodule update --init --recursive"
     },
