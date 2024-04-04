@@ -7,7 +7,7 @@
       "name": "Debug network_asio_experience",
       "program": "build/network_asio_experience.exe",
       "args": [],
-      "preLaunchTask": "(Windows) 20. + Build"
+      "preLaunchTask": "(Win) 20. + Build"
     }
   ]
 }

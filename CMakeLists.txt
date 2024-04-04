@@ -11,7 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ###################################################################
 # ############### Searching some packages in system #################
 # ###################################################################
-# find_package(asio CONFIG REQUIRED) // TODO add your packages here
+find_package(asio CONFIG REQUIRED)
 
 # ###################################################################
 # ################# Add dependencies as submodules ##################
@@ -35,6 +35,7 @@ target_compile_options(network_asio_experience PRIVATE
 target_link_libraries(network_asio_experience
     PRIVATE
     my_cpp_utils
+    asio
 )
 
 target_include_directories(network_asio_experience
