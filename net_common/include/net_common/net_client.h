@@ -28,20 +28,19 @@ public:
     {
         try
         {
-            // // TODO: Implement this.
+            // Resolve the IP address.
+            asio::ip::tcp::resolver resolver(m_asioContext);
+            auto endpoints = resolver.resolve(host, std::to_string(port));
 
-            // // Create a connection.
-            // m_connection = std::make_unique<connection<T>>(); // TODO
+            // Create a connection.
+            m_connection =
+                std::make_unique<connection<T>>(connection<T>::owner::client, m_asioContext, m_socket, m_qMessagesIn);
 
-            // // Resolve the IP address.
-            // asio::ip::tcp::resolver resolver(m_asioContext);
-            // m_endpoints = resolver.resolve(host, std::to_string(port));
+            // Tell the connection object to connect to the server.
+            m_connection->ConnectToServer(endpoints);
 
-            // // Tell the connection object to connect to the server.
-            // m_connection->ConnectToServer(m_endpoints);
-
-            // // Start the ASIO context thread.
-            // thrContext = std::thread([this]() { m_asioContext.run(); });
+            // Start the ASIO context thread.
+            thrContext = std::thread([this]() { m_asioContext.run(); });
         }
         catch (std::exception& e)
         {
@@ -100,8 +99,6 @@ protected:
     std::unique_ptr<connection<T>> m_connection;
 private:
     // This is thread safe queue of incoming messages from the server.
-    thread_safe_queue<T> m_qMessagesIn;
-    // This is the IP address of the server.
-    asio::ip::tcp::resolver::results_type m_endpoints;
+    thread_safe_queue<owned_message<T>> m_qMessagesIn;
 };
 } // namespace net

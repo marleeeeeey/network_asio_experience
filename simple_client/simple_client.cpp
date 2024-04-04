@@ -1,60 +1,116 @@
-#include <cassert>
 #include <my_cpp_utils/logger.h>
 #include <net_common/net_client.h>
 #include <net_common/net_message.h>
 
 enum class CustomMsgTypes : uint32_t
 {
-    FireBullet,
-    MovePlayer
+    ServerAccept,
+    ServerDeny,
+    ServerPing,
+    MessageAll,
+    ServerMessage,
 };
 
 class CustomClient : public net::client_interface<CustomMsgTypes>
 {
 public:
-    bool FireBullet(float x, float y)
+    CustomClient() {}
+
+    void PingServer()
     {
         net::message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::FireBullet;
-        msg << x << y;
+        msg.header.id = CustomMsgTypes::ServerPing;
+
+        // Measure round trip time.
+        // Caution with this ...
+        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+        msg << timeNow;
         Send(msg);
-        return true;
     }
 };
 
 int main()
 {
-    utils::Logger::Init("logs/net_client.log", spdlog::level::trace);
+    utils::Logger::Init("logs/simple_client.log", spdlog::level::trace);
 
-    net::message<CustomMsgTypes> msg;
-    msg.header.id = CustomMsgTypes::FireBullet;
-
-    int a = 1;
-    bool b = true;
-    float c = 3.14159f;
-
-    struct
-    {
-        float x;
-        float y;
-    } d[5];
-
-    msg << a << b << c << d;
-
-    a = 99;
-    b = false;
-    c = 42.0f;
-
-    msg >> d >> c >> b >> a;
-
-    assert(a == 1);
-    assert(b == true);
-    assert(c == 3.14159f);
-}
-
-void StartCustomClient()
-{
     CustomClient c;
-    c.Connect("asdf.com", 60000);
-    c.FireBullet(1.0f, 2.0f);
+    c.Connect("127.0.0.1", 60000);
+
+    bool key[3] = {false, false, false};
+    bool old_key[3] = {false, false, false};
+
+    bool bQuit = false;
+    while (!bQuit)
+    {
+        // Windows message handling.
+        if (GetForegroundWindow() == GetConsoleWindow())
+        {
+            key[0] = GetAsyncKeyState('1') & 0x8000;
+            key[1] = GetAsyncKeyState('2') & 0x8000;
+            key[2] = GetAsyncKeyState('3') & 0x8000;
+        }
+
+        if (key[0] && !old_key[0])
+        {
+            c.PingServer();
+        }
+        if (key[1] && !old_key[1])
+        {
+            net::message<CustomMsgTypes> msg;
+            msg.header.id = CustomMsgTypes::MessageAll;
+            c.Send(msg);
+        }
+        if (key[2] && !old_key[2])
+        {
+            bQuit = true;
+        }
+    }
+
+    // If the client still connected.
+    if (c.IsConnected())
+    {
+        // If client has incoming messages.
+        if (!c.Incoming().empty())
+        {
+            auto msg = c.Incoming().pop_front().msg;
+
+            switch (msg.header.id)
+            {
+            case CustomMsgTypes::ServerAccept:
+                {
+                    MY_LOG(info, "Server accepted connection");
+                    break;
+                }
+            case CustomMsgTypes::ServerDeny:
+                {
+                    MY_LOG(info, "Server denied connection");
+                    break;
+                }
+            case CustomMsgTypes::ServerPing:
+                {
+                    MY_LOG(info, "Server pinged us");
+
+                    // Measure round trip time in seconds.
+                    std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+                    std::chrono::system_clock::time_point timeThen;
+                    msg >> timeThen;
+                    MY_LOG_FMT(info, "Ping: {}", std::chrono::duration<double>(timeNow - timeThen).count());
+
+                    break;
+                }
+            case CustomMsgTypes::ServerMessage:
+                {
+                    MY_LOG(info, "Server has sent a message");
+                    break;
+                }
+            case CustomMsgTypes::MessageAll:
+                break;
+            }
+        }
+    }
+    else
+    {
+        MY_LOG(error, "Server Down");
+        bQuit = true;
+    }
 }

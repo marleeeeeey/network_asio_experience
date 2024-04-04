@@ -31,27 +31,28 @@ protected:
 
     virtual void OnMessage(std::shared_ptr<net::connection<CustomMsgTypes>> client, net::message<CustomMsgTypes>& msg)
     {
-        // switch (msg.header.id)
-        // {
-        // case CustomMsgTypes::ServerPing:
-        //     {
-        //         MY_LOG(info, "Ping from client");
-        //         client->Send(msg);
-        //         break;
-        //     }
-        // case CustomMsgTypes::MessageAll:
-        //     {
-        //         MY_LOG(info, "Message all from client");
-        //         net::message<CustomMsgTypes> msg;
-        //         msg.header.id = CustomMsgTypes::ServerMessage;
-        //         msg << client->GetID();
-        //         MessageAllClients(msg, client);
-        //         break;
-        //     }
-        // default:
-        //     MY_LOG(error, "Unrecognized message type");
-        //     break;
-        // }
+        switch (msg.header.id)
+        {
+        case CustomMsgTypes::ServerPing:
+            {
+                MY_LOG(info, "Ping from client");
+                // Simply bounce message back to client.
+                client->Send(msg);
+                break;
+            }
+        case CustomMsgTypes::MessageAll:
+            {
+                // MY_LOG(info, "Message all from client");
+                // net::message<CustomMsgTypes> msg;
+                // msg.header.id = CustomMsgTypes::ServerMessage;
+                // msg << client->GetID();
+                // MessageAllClients(msg, client);
+                break;
+            }
+        default:
+            MY_LOG(error, "Unrecognized message type");
+            break;
+        }
     }
 };
 
