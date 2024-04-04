@@ -28,18 +28,20 @@ public:
     {
         try
         {
-            // Create a connection.
-            m_connection = std::make_unique<connection<T>>(); // TODO
+            // // TODO: Implement this.
 
-            // Resolve the IP address.
-            asio::ip::tcp::resolver resolver(m_asioContext);
-            m_endpoints = resolver.resolve(host, std::to_string(port));
+            // // Create a connection.
+            // m_connection = std::make_unique<connection<T>>(); // TODO
 
-            // Tell the connection object to connect to the server.
-            m_connection->ConnectToServer(m_endpoints);
+            // // Resolve the IP address.
+            // asio::ip::tcp::resolver resolver(m_asioContext);
+            // m_endpoints = resolver.resolve(host, std::to_string(port));
 
-            // Start the ASIO context thread.
-            thrContext = std::thread([this]() { m_asioContext.run(); });
+            // // Tell the connection object to connect to the server.
+            // m_connection->ConnectToServer(m_endpoints);
+
+            // // Start the ASIO context thread.
+            // thrContext = std::thread([this]() { m_asioContext.run(); });
         }
         catch (std::exception& e)
         {

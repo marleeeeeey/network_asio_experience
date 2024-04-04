@@ -19,26 +19,10 @@ find_package(asio CONFIG REQUIRED)
 add_subdirectory(thirdparty/my_cpp_utils)
 
 # ###################################################################
-# ##################### Build project itself ########################
+# ##################### Build projects itself #######################
 # ###################################################################
-file(GLOB_RECURSE network_asio_experience_SOURCES "./src/*.cpp")
-add_executable(network_asio_experience ${network_asio_experience_SOURCES})
+add_subdirectory(net_common)
 
-target_compile_options(network_asio_experience PRIVATE
-    -Wall
-    -Wextra
-
-    # -Werror
-    # -Wpedantic
-)
-
-target_link_libraries(network_asio_experience
-    PRIVATE
-    my_cpp_utils
-    asio
-)
-
-target_include_directories(network_asio_experience
-    PRIVATE
-    src
-)
+# add_subdirectory(simple_client)
+add_subdirectory(simple_server)
+add_subdirectory(simple_asio_example)

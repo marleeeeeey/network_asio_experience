@@ -69,6 +69,15 @@ public:
         deqQueue.pop_back();
         return t;
     }
+
+    // Wait until the queue is not empty, then pop the front item.
+    void wait()
+    {
+        while (empty())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
 protected:
     std::mutex muxQueue; // protect the double-ended queue.
     std::deque<T> deqQueue; // double-ended queue.

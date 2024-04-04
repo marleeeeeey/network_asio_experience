@@ -1,5 +1,3 @@
-#include "asio_example.h"
-
 #include <asio.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/ts/buffer.hpp>
@@ -28,8 +26,10 @@ void GrabSomeDataAsync(asio::ip::tcp::socket& socket)
         });
 }
 
-void StartAsioExample()
+int main()
 {
+    utils::Logger::Init("logs/net_asio_simple_example.log", spdlog::level::trace);
+
     // Error code for asio operations. Exception can also be used.
     asio::error_code ec;
 

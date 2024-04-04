@@ -37,29 +37,29 @@
     {
       "label": "(Win) 20. + Build",
       "type": "shell",
-      "command": "cmake --build build -- -k 0", // stop on first error
-      // "command": "cmake --build build", // continue on error
+      // "command": "cmake --build build -- -k 0", // stop on first error
+      "command": "cmake --build build", // continue on error
       "dependsOn": [
         "(Win) 10. + Configure"
       ]
     },
+    // {
+    //   "label": "(Win) 30. + Run",
+    //   "type": "shell",
+    //   "command": "${workspaceFolder}/build/network_asio_experience.exe",
+    //   "dependsOn": [
+    //     "(Win) 20. + Build"
+    //   ]
+    // },
     {
-      "label": "(Win) 30. + Run",
+      "label": "(Win) 40. Run Simple Server",
       "type": "shell",
-      "command": "${workspaceFolder}/build/network_asio_experience.exe",
-      "dependsOn": [
-        "(Win) 20. + Build"
-      ]
+      "command": "${workspaceFolder}/build/simple_server/simple_server.exe"
     },
     {
-      "label": "(Win) 40. Run",
+      "label": "(Win) 50. Run Simple Server (Detached)",
       "type": "shell",
-      "command": "${workspaceFolder}/build/network_asio_experience.exe"
-    },
-    {
-      "label": "(Win) 50. Run (Detached)",
-      "type": "shell",
-      "command": "start ${workspaceFolder}/build/network_asio_experience.exe server"
+      "command": "start ${workspaceFolder}/build/simple_server/simple_server.exe"
     }
   ]
 }

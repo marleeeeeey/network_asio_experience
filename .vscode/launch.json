@@ -4,8 +4,8 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug network_asio_experience",
-      "program": "build/network_asio_experience.exe",
+      "name": "Debug simple_server",
+      "program": "${workspaceFolder}/build/simple_server/simple_server.exe",
       "args": [],
       "preLaunchTask": "(Win) 20. + Build"
     }
