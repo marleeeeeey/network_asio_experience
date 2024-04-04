@@ -1,0 +1,11 @@
+{
+  "name": "deafult-vcpkg-json",
+  "version-string": "1.0",
+  "description": "Use vcpkg to declare dependencies and fetch them automatically.",
+  "dependencies": [
+    "glm",
+    "magic-enum",
+    "nlohmann-json",
+    "spdlog"
+  ]
+}

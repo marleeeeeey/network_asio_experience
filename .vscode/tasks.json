@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "(Windows) 00. Remove vcpkg and vcpkg_installed folders",
+      "type": "shell",
+      "command": "rmdir /s /q vcpkg vcpkg_installed",
+    },
+    {
+      "label": "(Windows) 01. Remove build folder",
+      "type": "shell",
+      "command": "rmdir /s /q build",
+    },
+    {
+      "label": "(Windows) 03. Install vcpkg as subfolder",
+      "type": "shell",
+      "command": "git clone https://github.com/microsoft/vcpkg && .\\vcpkg\\bootstrap-vcpkg.bat && .\\vcpkg\\vcpkg install --triplet=x64-windows"
+    },
+    {
+      "label": "(Windows) 05. Clean console",
+      "type": "shell",
+      "command": "cls",
+    },
+    {
+      "label": "(Windows) 10. + Configure",
+      "type": "shell",
+      "command": "cmake -S . -B build -G \"Ninja\" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "dependsOn": [
+        "(Windows) 05. Clean console"
+      ]
+    },
+    {
+      "label": "(Windows) 20. + Build",
+      "type": "shell",
+      "command": "cmake --build build -- -k 0", // stop on first error
+      // "command": "cmake --build build", // continue on error
+      "dependsOn": [
+        "(Windows) 10. + Configure"
+      ]
+    },
+    {
+      "label": "(Windows) 30. + Run",
+      "type": "shell",
+      "command": "${workspaceFolder}/build/cpp_project_template.exe",
+      "dependsOn": [
+        "(Windows) 20. + Build"
+      ]
+    },
+    {
+      "label": "(Windows) 40. Run",
+      "type": "shell",
+      "command": "${workspaceFolder}/build/cpp_project_template.exe"
+    },
+    {
+      "label": "(Windows) 50. Run (Detached)",
+      "type": "shell",
+      "command": "start ${workspaceFolder}/build/cpp_project_template.exe server"
+    }
+  ]
+}
