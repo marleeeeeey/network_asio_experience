@@ -14,4 +14,5 @@ target_link_libraries(simple_server
     my_cpp_utils
     asio
     net_common
+    simple_common
 )

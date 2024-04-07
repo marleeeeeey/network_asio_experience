@@ -4,10 +4,18 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug simple_server",
+      "name": "Debug Simple Server",
       "program": "${workspaceFolder}/build/simple_server/simple_server.exe",
-      "args": [],
-      "preLaunchTask": "(Win) 20. + Build"
+      "args": []
+      // ,      "preLaunchTask": "(Win) 20. + Build"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug Simple Client",
+      "program": "${workspaceFolder}/build/simple_client/simple_client.exe",
+      "args": []
+      // ,      "preLaunchTask": "(Win) 20. + Build"
     }
   ]
 }

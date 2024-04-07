@@ -1,14 +1,6 @@
 #include <my_cpp_utils/logger.h>
 #include <net_common/net_server.h>
-
-enum class CustomMsgTypes : uint32_t
-{
-    ServerAccept,
-    ServerDeny,
-    ServerPing,
-    MessageAll,
-    ServerMessage,
-};
+#include <simple_common/custom_msg_type.h>
 
 class CustomServer : public net::server_interface<CustomMsgTypes>
 {

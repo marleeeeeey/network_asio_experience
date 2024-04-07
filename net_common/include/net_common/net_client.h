@@ -3,6 +3,7 @@
 #include "net_message.h"
 #include "net_thread_safe_queue.h"
 #include <asio.hpp>
+#include <asio/ip/tcp.hpp>
 #include <my_cpp_utils/logger.h>
 
 namespace net
@@ -13,7 +14,7 @@ template <typename T>
 class client_interface
 {
 public:
-    client_interface() : m_socket(m_asioContext)
+    client_interface()
     {
         // Initialize the socket with the ASIO context, so it can do stuff.
     }
@@ -29,18 +30,18 @@ public:
         try
         {
             // Resolve the IP address.
-            asio::ip::tcp::resolver resolver(m_asioContext);
+            asio::ip::tcp::resolver resolver(m_context);
             auto endpoints = resolver.resolve(host, std::to_string(port));
 
             // Create a connection.
-            m_connection =
-                std::make_unique<connection<T>>(connection<T>::owner::client, m_asioContext, m_socket, m_qMessagesIn);
+            m_connection = std::make_unique<connection<T>>(
+                connection<T>::owner::client, m_context, asio::ip::tcp::socket(m_context), m_qMessagesIn);
 
             // Tell the connection object to connect to the server.
             m_connection->ConnectToServer(endpoints);
 
             // Start the ASIO context thread.
-            thrContext = std::thread([this]() { m_asioContext.run(); });
+            thrContext = std::thread([this]() { m_context.run(); });
         }
         catch (std::exception& e)
         {
@@ -62,7 +63,7 @@ public:
         }
 
         // Stop the ASIO context.
-        m_asioContext.stop();
+        m_context.stop();
 
         // Tidy up the context thread.
         if (thrContext.joinable())
@@ -86,15 +87,14 @@ public:
     // Send message to the server.
     void Send(const message<T>& msg)
     {
-        // ...
+        if (IsConnected())
+            m_connection->Send(msg);
     }
 protected:
     // ASIO context handles the data transfer...
-    asio::io_context m_asioContext;
+    asio::io_context m_context;
     // ...but needs a thread of execution to operate.
     std::thread thrContext;
-    // The client has a single socket connection.
-    asio::ip::tcp::socket m_socket;
     // Each client has a single instance of the "connection" class.
     std::unique_ptr<connection<T>> m_connection;
 private:

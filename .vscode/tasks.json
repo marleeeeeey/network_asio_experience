@@ -57,9 +57,19 @@
       "command": "${workspaceFolder}/build/simple_server/simple_server.exe"
     },
     {
-      "label": "(Win) 50. Run Simple Server (Detached)",
+      "label": "(Win) 45. Run Simple Server (Detached)",
       "type": "shell",
       "command": "start ${workspaceFolder}/build/simple_server/simple_server.exe"
+    },
+    {
+      "label": "(Win) 50. Run Simple Client",
+      "type": "shell",
+      "command": "${workspaceFolder}/build/simple_client/simple_client.exe"
+    },
+    {
+      "label": "(Win) 55. Run Simple Client (Detached)",
+      "type": "shell",
+      "command": "start ${workspaceFolder}/build/simple_client/simple_client.exe"
     }
   ]
 }

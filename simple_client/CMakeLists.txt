@@ -14,4 +14,7 @@ target_link_libraries(simple_client
     my_cpp_utils
     asio
     net_common
+    simple_common
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
 )

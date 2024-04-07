@@ -12,6 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # ############### Searching some packages in system #################
 # ###################################################################
 find_package(asio CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 
 # ###################################################################
 # ################# Add dependencies as submodules ##################
@@ -25,3 +26,4 @@ add_subdirectory(net_common)
 add_subdirectory(simple_client)
 add_subdirectory(simple_server)
 add_subdirectory(simple_asio_example)
+add_subdirectory(simple_common)
