@@ -28,12 +28,20 @@ public:
     {
         std::scoped_lock lock(muxQueue);
         deqQueue.emplace_back(std::move(item));
+
+        // Notify any threads waiting on data.
+        std::scoped_lock lockBlocking(muxBlocking);
+        cvBlocking.notify_one();
     }
 
     void push_front(const T& item)
     {
         std::scoped_lock lock(muxQueue);
         deqQueue.emplace_front(std::move(item));
+
+        // Notify any threads waiting on data.
+        std::scoped_lock lockBlocking(muxBlocking);
+        cvBlocking.notify_one();
     }
 
     bool empty()
@@ -75,11 +83,18 @@ public:
     {
         while (empty())
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::unique_lock<std::mutex> lock(muxBlocking);
+            cvBlocking.wait(lock);
         }
     }
 protected:
-    std::mutex muxQueue; // protect the double-ended queue.
-    std::deque<T> deqQueue; // double-ended queue.
+    // Mutex to protect the double-ended queue.
+    std::mutex muxQueue;
+    // Double-ended queue to hold the data.
+    std::deque<T> deqQueue;
+    // Condition variable to block the thread until the queue has data.
+    std::condition_variable cvBlocking;
+    // Mutex to protect the condition variable.
+    std::mutex muxBlocking;
 };
 } // namespace net
