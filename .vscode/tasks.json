@@ -46,7 +46,7 @@
     // {
     //   "label": "(Win) 30. + Run",
     //   "type": "shell",
-    //   "command": "${workspaceFolder}/build/network_asio_experience.exe",
+    //   "command": "./build/network_asio_experience.exe",
     //   "dependsOn": [
     //     "(Win) 20. + Build"
     //   ]
@@ -54,22 +54,22 @@
     {
       "label": "(Win) 40. Run Simple Server",
       "type": "shell",
-      "command": "${workspaceFolder}/build/simple_server/simple_server.exe"
+      "command": "./build/simple_server/simple_server.exe"
     },
     {
       "label": "(Win) 45. Run Simple Server (Detached)",
       "type": "shell",
-      "command": "start ${workspaceFolder}/build/simple_server/simple_server.exe"
+      "command": "start ./build/simple_server/simple_server.exe"
     },
     {
       "label": "(Win) 50. Run Simple Client",
       "type": "shell",
-      "command": "${workspaceFolder}/build/simple_client/simple_client.exe"
+      "command": "./build/simple_client/simple_client.exe"
     },
     {
       "label": "(Win) 55. Run Simple Client (Detached)",
       "type": "shell",
-      "command": "start ${workspaceFolder}/build/simple_client/simple_client.exe"
+      "command": "start ./build/simple_client/simple_client.exe"
     }
   ]
 }

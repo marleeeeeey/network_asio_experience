@@ -29,11 +29,11 @@ public:
         }
         catch (std::exception& e)
         {
-            MY_LOG_FMT(error, "[Server] Exception: {}", e.what());
+            MY_LOG_FMT(error, "[server_interface] Exception: {}", e.what());
             return false;
         }
 
-        MY_LOG(info, "[Server] Started!");
+        MY_LOG(info, "[server_interface] Started!");
         return true;
     }
 
@@ -47,9 +47,9 @@ public:
             m_threadContext.join();
 
         // Inform someone, anybody, if they care...
-        MY_LOG(info, "[Server] Stopped!");
+        MY_LOG(info, "[server_interface] Stopped!");
     }
-
+private:
     // ASYNC - Instruct ASIO to wait for connection.
     void WaitForClientConnection()
     {
@@ -58,7 +58,8 @@ public:
             {
                 if (!ec)
                 {
-                    MY_LOG_FMT(info, "[Server] New Connection: {}", socket.remote_endpoint().address().to_string());
+                    MY_LOG_FMT(
+                        info, "[server_interface] New Connection: {}", socket.remote_endpoint().address().to_string());
 
                     // Create a new connection to handle this client and start waiting for more connections.
                     // Server and client behave are different. That's why we need to specify the owner as server.
@@ -72,23 +73,24 @@ public:
                         m_deqConnections.push_back(std::move(newconn));
                         m_deqConnections.back()->ConnectToClient(nIDCounter++);
 
-                        MY_LOG_FMT(info, "[Server] Connection Approved. ID: {}", m_deqConnections.back()->GetID());
+                        MY_LOG_FMT(
+                            info, "[server_interface] Connection Approved. ID: {}", m_deqConnections.back()->GetID());
                     }
                     else
                     {
-                        MY_LOG(info, "[Server] Connection Denied");
+                        MY_LOG(info, "[server_interface] Connection Denied");
                     }
                 }
                 else
                 {
-                    MY_LOG_FMT(error, "[Server] New Connection Error: {}", ec.message());
+                    MY_LOG_FMT(error, "[server_interface] New Connection Error: {}", ec.message());
                 }
 
                 // Prime the asio context with more work - again simply wait for another connection...
                 WaitForClientConnection();
             });
     }
-
+public:
     // Send a message to a specific client.
     void MessageClient(std::shared_ptr<connection<T>> client, const message<T>& msg)
     {
@@ -112,6 +114,10 @@ public:
     // Send a message to all clients.
     void MessageAllClients(const message<T>& msg, std::shared_ptr<connection<T>> pIgnoreClient = nullptr)
     {
+        MY_LOG_FMT(
+            info, "[server_interface::MessageAllClients] Sending message: ID {}, Size {}", msg.header.id,
+            msg.header.size);
+
         // Optimization: This flag helps us to remove dead connections once we finish sending messages.
         bool bInvalidClientExists = false;
 
@@ -138,7 +144,7 @@ public:
         {
             m_deqConnections.erase(
                 std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr), m_deqConnections.end());
-            MY_LOG(info, "[Server] Cleaned up dead connections");
+            MY_LOG(info, "[server_interface] Cleaned up dead connections");
         }
     }
 

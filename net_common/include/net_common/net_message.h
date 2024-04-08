@@ -23,7 +23,7 @@ struct message
     std::vector<uint8_t> body;
 
     // Returns the size of the entire message in bytes.
-    size_t size() const { return sizeof(message_header<T>) + body.size(); }
+    size_t size() const { return body.size(); }
 
     // Overload the << operator for std::cout compatibility.
     friend std::ostream& operator<<(std::ostream& os, const message<T>& msg)

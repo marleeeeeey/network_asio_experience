@@ -1,6 +1,7 @@
 #include <my_cpp_utils/logger.h>
 #include <net_common/net_server.h>
 #include <simple_common/custom_msg_type.h>
+#include <simple_common/settings.h>
 
 class CustomServer : public net::server_interface<CustomMsgTypes>
 {
@@ -9,16 +10,15 @@ public:
 protected:
     virtual bool OnClientConnect(std::shared_ptr<net::connection<CustomMsgTypes>> client)
     {
-        // net::message<CustomMsgTypes> msg;
-        // msg.header.id = CustomMsgTypes::ServerAccept;
-        // client->Send(msg);
-        // return true;
+        net::message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::ServerAccept;
+        client->Send(msg);
         return true;
     }
 
     virtual void OnClientDisconnect(std::shared_ptr<net::connection<CustomMsgTypes>> client)
     {
-        MY_LOG_FMT(info, "Removing client [{}]", client->GetID());
+        MY_LOG_FMT(info, "[CustomServer::OnClientDisconnect] Client {} disconnected", client->GetID());
     }
 
     virtual void OnMessage(std::shared_ptr<net::connection<CustomMsgTypes>> client, net::message<CustomMsgTypes>& msg)
@@ -27,18 +27,17 @@ protected:
         {
         case CustomMsgTypes::ServerPing:
             {
-                MY_LOG(info, "Ping from client");
-                // Simply bounce message back to client.
+                MY_LOG_FMT(info, "[CustomServer::OnMessage] ServerPing received from client {}", client->GetID());
                 client->Send(msg);
                 break;
             }
         case CustomMsgTypes::MessageAll:
             {
-                // MY_LOG(info, "Message all from client");
-                // net::message<CustomMsgTypes> msg;
-                // msg.header.id = CustomMsgTypes::ServerMessage;
-                // msg << client->GetID();
-                // MessageAllClients(msg, client);
+                MY_LOG_FMT(info, "[CustomServer::OnMessage] MessageAll received from client {}", client->GetID());
+                net::message<CustomMsgTypes> msg;
+                msg.header.id = CustomMsgTypes::ServerMessage;
+                msg << client->GetID();
+                MessageAllClients(msg, client);
                 break;
             }
         default:
@@ -50,13 +49,13 @@ protected:
 
 int main()
 {
-    utils::Logger::Init("logs/net_server.log", spdlog::level::trace);
+    utils::Logger::Init("logs/simple_server.log", spdlog::level::info);
 
-    CustomServer server(60000);
+    CustomServer server(settings::defaultPort);
 
     server.Start();
 
-    while (1)
+    while (true)
     {
         server.Update();
     }

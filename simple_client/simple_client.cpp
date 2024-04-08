@@ -1,8 +1,10 @@
 #include "sdl_RAII.h"
 #include <my_cpp_utils/logger.h>
+#include <my_cpp_utils/string_utils.h>
 #include <net_common/net_client.h>
 #include <net_common/net_message.h>
 #include <simple_common/custom_msg_type.h>
+#include <simple_common/settings.h>
 
 class CustomClient : public net::client_interface<CustomMsgTypes>
 {
@@ -18,18 +20,33 @@ public:
         // Caution with this ...
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
         msg << timeNow;
+
+        MY_LOG_FMT(
+            debug, "[PingServer] Send message: ID {}, BodySizeInHeader {}, RealBodySize {}", msg.header.id,
+            msg.header.size, msg.body.size());
+
+        Send(msg);
+    }
+
+    void MessageAll()
+    {
+        net::message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::MessageAll;
+
+        MY_LOG_FMT(
+            debug, "[MessageAll] Send message: ID {}, BodySizeInHeader {}, RealBodySize {}", msg.header.id,
+            msg.header.size, msg.body.size());
+
         Send(msg);
     }
 };
 
 int SDL_main(int argv, char** args)
 {
-    utils::Logger::Init("logs/simple_client.log", spdlog::level::trace);
+    utils::Logger::Init("logs/simple_client.log", spdlog::level::info);
 
     CustomClient c;
-    c.Connect("127.0.0.1", 60000);
-
-    bool quit = false;
+    c.Connect("127.0.0.1", settings::defaultPort);
 
     try
     {
@@ -38,6 +55,7 @@ int SDL_main(int argv, char** args)
             "Press 1 to ping server, 2 to message all, 3 to quit", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640,
             480, SDL_WINDOW_SHOWN);
 
+        bool quit = false;
         while (!quit)
         {
             SDL_Event e;
@@ -56,12 +74,8 @@ int SDL_main(int argv, char** args)
                         c.PingServer();
                         break;
                     case SDLK_2:
-                        {
-                            net::message<CustomMsgTypes> msg;
-                            msg.header.id = CustomMsgTypes::MessageAll;
-                            c.Send(msg);
-                            break;
-                        }
+                        c.MessageAll();
+                        break;
                     case SDLK_3:
                         quit = true;
                         break;
@@ -81,29 +95,29 @@ int SDL_main(int argv, char** args)
                     {
                     case CustomMsgTypes::ServerAccept:
                         {
-                            MY_LOG(info, "Server accepted connection");
+                            MY_LOG(info, "[SDL_main] Server accepted connection");
                             break;
                         }
                     case CustomMsgTypes::ServerDeny:
                         {
-                            MY_LOG(info, "Server denied connection");
+                            MY_LOG(info, "[SDL_main] Server denied connection");
                             break;
                         }
                     case CustomMsgTypes::ServerPing:
                         {
-                            MY_LOG(info, "Server pinged us");
-
                             // Measure round trip time in seconds.
                             std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
                             std::chrono::system_clock::time_point timeThen;
                             msg >> timeThen;
-                            MY_LOG_FMT(info, "Ping: {}", std::chrono::duration<double>(timeNow - timeThen).count());
-
+                            auto durationSec = std::chrono::duration<double>(timeNow - timeThen).count();
+                            MY_LOG_FMT(info, "[SDL_main] Recieved ping message. Round trip time: {}s", durationSec);
                             break;
                         }
                     case CustomMsgTypes::ServerMessage:
                         {
-                            MY_LOG(info, "Server has sent a message");
+                            uint32_t clientID;
+                            msg >> clientID;
+                            MY_LOG_FMT(info, "[SDL_main] Recieved broadcast message from {}", clientID);
                             break;
                         }
                     case CustomMsgTypes::MessageAll:
@@ -113,7 +127,7 @@ int SDL_main(int argv, char** args)
             }
             else
             {
-                MY_LOG(error, "Server Down");
+                MY_LOG(error, "[SDL_main] Server Down");
                 quit = true;
             }
         }
