@@ -2,8 +2,16 @@
 
 network_asio_experience - project to learn and experiment with the Asio library.
 
-Code made by following video lessons from javidx9:
+Code made by following video lessons from javidx9.
+
+javidx9 code:
+https://github.com/OneLoneCoder/Javidx9/tree/master/PixelGameEngine/BiggerProjects/Networking
+
+javidx9 video lessons:
 1. https://www.youtube.com/watch?v=2hNdkYInj4g `DONE`
+2. https://www.youtube.com/watch?v=UbjxGvrDrbw `DONE`
+3. https://www.youtube.com/watch?v=hHowZ3bWsio `DONE`
+4. https://www.youtube.com/watch?v=f_1lt9pfaEo
 
 ### Prerequisites for Building the Project
 

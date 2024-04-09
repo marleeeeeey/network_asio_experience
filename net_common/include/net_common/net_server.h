@@ -71,7 +71,7 @@ private:
                     {
                         // Connection allowed, so add to container of new connections.
                         m_deqConnections.push_back(std::move(newconn));
-                        m_deqConnections.back()->ConnectToClient(nIDCounter++);
+                        m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
 
                         MY_LOG_FMT(
                             info, "[server_interface] Connection Approved. ID: {}", m_deqConnections.back()->GetID());
@@ -170,7 +170,8 @@ public:
     }
 protected:
     // Called when a client connects, you can veto the connection by returning false.
-    // Other words this function is a filter of clients (connections).
+    // Other words this function is a filter of clients (connections) by IP address, etc.
+    // Despite the OnClientValidated function, this function is called before the client has been validated.
     virtual bool OnClientConnect(std::shared_ptr<connection<T>> client) { return false; }
 
     // Called when a client appears to have disconnected.
@@ -181,6 +182,10 @@ protected:
 
     // Called when a message arrives.
     virtual void OnMessage(std::shared_ptr<connection<T>> client, message<T>& msg) {}
+public:
+    // This is called when a client is validated. This means that the client has been authenticated.
+    // Despite the OnClientConnect function, this function is called after the client has been validated.
+    virtual void OnClientValidated(std::shared_ptr<connection<T>> client) {}
 protected:
     // Thread safe queue for incoming message packets.
     thread_safe_queue<owned_message<T>> m_qMessagesIn;

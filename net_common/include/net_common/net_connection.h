@@ -4,9 +4,15 @@
 #include "net_thread_safe_queue.h"
 #include <asio.hpp>
 #include <asio/io_context.hpp>
+#include <asio/write.hpp>
+#include <cstdint>
 
 namespace net
 {
+
+// Forward declare the server interface.
+template <typename T>
+class server_interface;
 
 // Client and server depends on the connection class.
 // Connection use net::thread_safe_queue and net::message.
@@ -26,20 +32,41 @@ public:
       : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
+
+        if (m_nOwnerType == owner::server)
+        {
+            // Server constuct random handshake number from the current time.
+            m_nHandshakeOut = uint64_t(std::chrono::system_clock::now().time_since_epoch().count());
+
+            // Precalculate the result for the handshake validation.
+            m_nHandshakeCheck = scramble(m_nHandshakeOut);
+        }
+        else
+        {
+            // Client does not need to calculate the handshake number.
+            m_nHandshakeIn = 0;
+            m_nHandshakeOut = 0;
+        }
     }
+
     virtual ~connection() {}
 
     // Get the unique ID for this connection.
     uint32_t GetID() const { return m_nID; }
 public:
-    bool ConnectToClient(uint32_t uid = 0)
+    bool ConnectToClient(net::server_interface<T>* server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server)
         {
             if (m_socket.is_open())
             {
                 m_nID = uid;
-                ReadHeader();
+
+                // Send the handshake to the client.
+                WriteValidation();
+
+                // Read the handshake response from the client.
+                ReadValidation(server);
             }
         }
         return false;
@@ -64,7 +91,7 @@ public:
                             debug, "[Connection] ConnectToServer HAS COMPLETED at {}:{}",
                             endpoint.address().to_string(), endpoint.port());
 
-                        ReadHeader();
+                        ReadValidation();
                     }
                 });
             return true;
@@ -275,6 +302,99 @@ private:
         // We must now prime the asio context to receive the next message.
         ReadHeader();
     }
+private: // Encryption/Decryption.
+    // Naive encrypt data function.
+    uint64_t scramble(uint64_t nInput)
+    {
+        uint64_t out = nInput ^ 0xDEADBEEFC0DECAFE;
+        out = (out & 0xF0F0F0F0DEADBEEF) << 8 | (out & 0xDEADBEEF00000000) >> 8;
+        return out ^ 0xC0DEFACE12345678; // May use as version number for the protocol.
+    }
+
+    // ASYNC - Used by both client and server to write the handshake pattern.
+    void WriteValidation()
+    {
+        MY_LOG_FMT(debug, "[Connection] WriteValidation STARTS: HandshakeOut {}", m_nHandshakeOut);
+
+        asio::async_write(
+            m_socket, asio::buffer(&m_nHandshakeOut, sizeof(uint64_t)),
+            [this](std::error_code ec, std::size_t length)
+            {
+                if (!ec)
+                {
+                    MY_LOG_FMT(
+                        debug, "[Connection] WriteValidation HAS COMPLETED: HandshakeOut {}, AsioLenth {}",
+                        m_nHandshakeOut, length);
+
+                    // Validation data sent. Client should sit and wait for a response.
+                    if (m_nOwnerType == owner::client)
+                        ReadHeader();
+                }
+                else
+                {
+                    MY_LOG_FMT(error, "[Connection] WriteValidation HAS FAILED: {}", ec.message());
+                    m_socket.close();
+                }
+            });
+    }
+
+    void ReadValidation(net::server_interface<T>* server = nullptr)
+    {
+        MY_LOG(debug, "[Connection] ReadValidation STARTS");
+
+        asio::async_read(
+            m_socket, asio::buffer(&m_nHandshakeIn, sizeof(uint64_t)),
+            [this, server](std::error_code ec, std::size_t length)
+            {
+                if (!ec)
+                {
+                    MY_LOG_FMT(
+                        debug, "[Connection] ReadValidation HAS COMPLETED: HandshakeIn {}, AsioLenth {}",
+                        m_nHandshakeIn, length);
+
+                    if (m_nOwnerType == owner::server)
+                    {
+                        // For the server: m_nHandshakeIn received from the client.
+                        if (m_nHandshakeIn == m_nHandshakeCheck)
+                        {
+                            MY_LOG_FMT(
+                                info, "[Connection] ReadValidation: HandshakeIn {} == HandshakeCheck {}",
+                                m_nHandshakeIn, m_nHandshakeCheck);
+                            MY_LOG(info, "[Connection] ReadValidation: Handshake is validated");
+
+                            // TODO0: Restore this line.
+                            // server->OnClientValidated(this->shared_from_this());
+
+                            // Handshake is validated, so start reading the header.
+                            ReadHeader();
+                        }
+                        else
+                        {
+                            // TODO3: There may be code to adding the client to a blacklist.
+
+                            MY_LOG_FMT(
+                                error, "[Connection] ReadValidation: HandshakeIn {} != HandshakeCheck {}",
+                                m_nHandshakeIn, m_nHandshakeCheck);
+                            MY_LOG(error, "[Connection] ReadValidation: Handshake is not validated");
+                            m_socket.close();
+                        }
+                    }
+                    else
+                    {
+                        // For the client: m_nHandshakeIn received from the server.
+                        m_nHandshakeOut = scramble(m_nHandshakeIn);
+
+                        // Send the handshake back to the server for validation.
+                        WriteValidation();
+                    }
+                }
+                else
+                {
+                    MY_LOG_FMT(error, "[Connection] ReadValidation HAS FAILED: {}", ec.message());
+                    m_socket.close();
+                }
+            });
+    }
 protected:
     // Responsible for the ASIO stuff.
     asio::ip::tcp::socket m_socket;
@@ -289,10 +409,16 @@ protected:
     thread_safe_queue<owned_message<T>>& m_qMessagesIn;
     // The "temporary" incoming message (completed messages are transferred to incoming message queue).
     message<T> m_msgTemporaryIn;
-
     // The "owner" decides how some of the connection behaves.
     owner m_nOwnerType = owner::server;
     uint32_t m_nID = 0;
+protected: //  Handshake validation.
+    // What the connections whould be send output.
+    uint64_t m_nHandshakeOut = 0;
+    // What the connections has received as result.
+    uint64_t m_nHandshakeIn = 0;
+    // Use from the server side to validate the client.
+    uint64_t m_nHandshakeCheck = 0;
 };
 
 } // namespace net
