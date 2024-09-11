@@ -2,14 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "(Win) 00. Remove vcpkg folders",
+      "label": "(Win) 00. Remove build and vcpkg folders",
       "type": "shell",
-      "command": "rmdir /s /q vcpkg vcpkg_installed",
-    },
-    {
-      "label": "(Win) 01. Remove build folder",
-      "type": "shell",
-      "command": "rmdir /s /q build",
+      "command": "cmake -E remove_directory build && cmake -E remove_directory vcpkg && cmake -E remove_directory vcpkg_installed",
     },
     {
       "label": "(Win) 02. Git submodule update",
@@ -29,7 +24,7 @@
     {
       "label": "(Win) 10. + Configure",
       "type": "shell",
-      "command": "cmake -S . -B build -G \"Ninja\" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "command": "cmake -S . -B build --preset use_vcpkg -GNinja -DCMAKE_CXX_COMPILER=clang++",
       "dependsOn": [
         "(Win) 05. Clean console"
       ]
@@ -37,8 +32,8 @@
     {
       "label": "(Win) 20. + Build",
       "type": "shell",
-      // "command": "cmake --build build -- -k 0", // stop on first error
-      "command": "cmake --build build", // continue on error
+      "command": "cmake --build build -- -k 0", // stop on first error
+      // "command": "cmake --build build", // continue on error
       "dependsOn": [
         "(Win) 10. + Configure"
       ]

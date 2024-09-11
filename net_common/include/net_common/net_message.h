@@ -20,7 +20,7 @@ template <typename T>
 struct message
 {
     message_header<T> header{};
-    std::vector<uint8_t> body;
+    std::vector<uint8_t> body; // bytes
 
     // Returns the size of the entire message in bytes.
     size_t size() const { return body.size(); }
