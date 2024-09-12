@@ -18,7 +18,7 @@ protected:
 
     virtual void OnClientDisconnect(std::shared_ptr<net::connection<CustomMsgTypes>> client)
     {
-        MY_LOG_FMT(info, "[CustomServer::OnClientDisconnect] Client {} disconnected", client->GetID());
+        MY_LOG(info, "[CustomServer::OnClientDisconnect] Client {} disconnected", client->GetID());
     }
 
     virtual void OnMessage(std::shared_ptr<net::connection<CustomMsgTypes>> client, net::message<CustomMsgTypes>& msg)
@@ -27,13 +27,13 @@ protected:
         {
         case CustomMsgTypes::ServerPing:
             {
-                MY_LOG_FMT(info, "[CustomServer::OnMessage] ServerPing received from client {}", client->GetID());
+                MY_LOG(info, "[CustomServer::OnMessage] ServerPing received from client {}", client->GetID());
                 client->Send(msg);
                 break;
             }
         case CustomMsgTypes::MessageAll:
             {
-                MY_LOG_FMT(info, "[CustomServer::OnMessage] MessageAll received from client {}", client->GetID());
+                MY_LOG(info, "[CustomServer::OnMessage] MessageAll received from client {}", client->GetID());
                 net::message<CustomMsgTypes> msg;
                 msg.header.id = CustomMsgTypes::ServerMessage;
                 msg << client->GetID();

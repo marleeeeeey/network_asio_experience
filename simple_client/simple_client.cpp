@@ -21,7 +21,7 @@ public:
         std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
         msg << timeNow;
 
-        MY_LOG_FMT(
+        MY_LOG(
             debug, "[PingServer] Send message: ID {}, BodySizeInHeader {}, RealBodySize {}", msg.header.id,
             msg.header.size, msg.body.size());
 
@@ -33,7 +33,7 @@ public:
         net::message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::MessageAll;
 
-        MY_LOG_FMT(
+        MY_LOG(
             debug, "[MessageAll] Send message: ID {}, BodySizeInHeader {}, RealBodySize {}", msg.header.id,
             msg.header.size, msg.body.size());
 
@@ -110,14 +110,14 @@ int SDL_main(int argv, char** args)
                             std::chrono::system_clock::time_point timeThen;
                             msg >> timeThen;
                             auto durationSec = std::chrono::duration<double>(timeNow - timeThen).count();
-                            MY_LOG_FMT(info, "[SDL_main] Recieved ping message. Round trip time: {}s", durationSec);
+                            MY_LOG(info, "[SDL_main] Recieved ping message. Round trip time: {}s", durationSec);
                             break;
                         }
                     case CustomMsgTypes::ServerMessage:
                         {
                             uint32_t clientID;
                             msg >> clientID;
-                            MY_LOG_FMT(info, "[SDL_main] Recieved broadcast message from {}", clientID);
+                            MY_LOG(info, "[SDL_main] Recieved broadcast message from {}", clientID);
                             break;
                         }
                     case CustomMsgTypes::MessageAll:
@@ -134,7 +134,7 @@ int SDL_main(int argv, char** args)
     }
     catch (const std::runtime_error& e)
     {
-        MY_LOG_FMT(error, "[SDL_main] Exception: {}", e.what());
+        MY_LOG(error, "[SDL_main] Exception: {}", e.what());
         return -1;
     }
 

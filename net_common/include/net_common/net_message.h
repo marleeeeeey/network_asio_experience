@@ -13,7 +13,7 @@ template <typename T>
 struct message_header
 {
     T id{};
-    uint32_t size = 0; // size_t is not used because it is platform dependent.
+    uint64_t size = 0; // size_t is not used because it is platform dependent.
 };
 
 template <typename T>

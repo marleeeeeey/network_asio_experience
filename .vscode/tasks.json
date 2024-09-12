@@ -14,12 +14,7 @@
     {
       "label": "(Win) 03. Install vcpkg as subfolder",
       "type": "shell",
-      "command": "git clone https://github.com/microsoft/vcpkg && .\\vcpkg\\bootstrap-vcpkg.bat && .\\vcpkg\\vcpkg install --triplet=x64-Windows"
-    },
-    {
-      "label": "(Win) 05. Clean console",
-      "type": "shell",
-      "command": "cls",
+      "command": "git clone --branch 2024.06.15 --single-branch https://github.com/microsoft/vcpkg && .\\vcpkg\\bootstrap-vcpkg.bat && .\\vcpkg\\vcpkg install --triplet=x64-Windows"
     },
     {
       "label": "(Win) 10. + Configure",

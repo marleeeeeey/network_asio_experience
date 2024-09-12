@@ -60,7 +60,7 @@ int main()
     }
     else
     {
-        MY_LOG_FMT(error, "Failed to connect to address: {}", ec.message());
+        MY_LOG(error, "Failed to connect to address: {}", ec.message());
     }
 
     if (socket.is_open())
@@ -79,7 +79,7 @@ int main()
         // asio::buffer is a container like array of bytes.
         socket.write_some(asio::buffer(request.data(), request.size()), ec);
         if (ec)
-            MY_LOG_FMT(error, "Failed to send request: {}", ec.message());
+            MY_LOG(error, "Failed to send request: {}", ec.message());
     }
 
     // Delay the closing of the application.

@@ -29,7 +29,7 @@ public:
         }
         catch (std::exception& e)
         {
-            MY_LOG_FMT(error, "[server_interface] Exception: {}", e.what());
+            MY_LOG(error, "[server_interface] Exception: {}", e.what());
             return false;
         }
 
@@ -58,7 +58,7 @@ private:
             {
                 if (!ec)
                 {
-                    MY_LOG_FMT(
+                    MY_LOG(
                         info, "[server_interface] New Connection: {}", socket.remote_endpoint().address().to_string());
 
                     // Create a new connection to handle this client and start waiting for more connections.
@@ -73,7 +73,7 @@ private:
                         m_deqConnections.push_back(std::move(newconn));
                         m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
 
-                        MY_LOG_FMT(
+                        MY_LOG(
                             info, "[server_interface] Connection Approved. ID: {}", m_deqConnections.back()->GetID());
                     }
                     else
@@ -83,7 +83,7 @@ private:
                 }
                 else
                 {
-                    MY_LOG_FMT(error, "[server_interface] New Connection Error: {}", ec.message());
+                    MY_LOG(error, "[server_interface] New Connection Error: {}", ec.message());
                 }
 
                 // Prime the asio context with more work - again simply wait for another connection...
@@ -114,7 +114,7 @@ public:
     // Send a message to all clients.
     void MessageAllClients(const message<T>& msg, std::shared_ptr<connection<T>> pIgnoreClient = nullptr)
     {
-        MY_LOG_FMT(
+        MY_LOG(
             info, "[server_interface::MessageAllClients] Sending message: ID {}, Size {}", msg.header.id,
             msg.header.size);
 

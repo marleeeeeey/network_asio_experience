@@ -5,7 +5,7 @@
             "name": "use_vcpkg",
             "displayName": "use_vcpkg",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "C:/dev/cpp_notes/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_TOOLCHAIN_FILE": "vcpkg/scripts/buildsystems/vcpkg.cmake",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         },

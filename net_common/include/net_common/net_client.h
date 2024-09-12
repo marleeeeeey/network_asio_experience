@@ -45,7 +45,7 @@ public:
         }
         catch (std::exception& e)
         {
-            MY_LOG_FMT(error, "Client Exception: {}", e.what());
+            MY_LOG(error, "Client Exception: {}", e.what());
             return false;
         }
 
