@@ -33,14 +33,14 @@
         "(Win) 10. + Configure"
       ]
     },
-    // {
-    //   "label": "(Win) 30. + Run",
-    //   "type": "shell",
-    //   "command": "./build/network_asio_experience.exe",
-    //   "dependsOn": [
-    //     "(Win) 20. + Build"
-    //   ]
-    // },
+    {
+      "label": "(Win) 30. Run first_http_request_asio_example",
+      "type": "shell",
+      "command": "./build/first_http_request_asio_example/first_http_request_asio_example.exe",
+      "dependsOn": [
+        "(Win) 20. + Build"
+      ]
+    },
     {
       "label": "(Win) 40. Run Simple Server",
       "type": "shell",

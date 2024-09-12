@@ -29,8 +29,9 @@ add_subdirectory(thirdparty/my_cpp_utils)
 # ###################################################################
 # ##################### Build projects itself #######################
 # ###################################################################
+add_subdirectory(first_http_request_asio_example)
+
 add_subdirectory(net_common)
+add_subdirectory(simple_common)
 add_subdirectory(simple_client)
 add_subdirectory(simple_server)
-add_subdirectory(simple_asio_example)
-add_subdirectory(simple_common)
